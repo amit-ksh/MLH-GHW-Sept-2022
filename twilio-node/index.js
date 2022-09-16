@@ -1,8 +1,8 @@
 import express from 'express';
-import twilio from 'twilio';
 import bodyParser from 'body-parser';
-const { MessagingResponse } = twilio.twiml;
+import twilio from 'twilio';
 
+const { MessagingResponse } = twilio.twiml;
 const app = express();
 const PORT = 3000;
 
@@ -13,18 +13,16 @@ app.get('/', (req, res) => {
 });
 
 app.post('/sms', (req, res) => {
-  const name = req.body.Name;
+  const From = req.body.From;
   const messageBody = req.body.Body;
 
-  // Start our TwiML response.
+  
+  console.log(`${From} sent message\nMESSSAGE: ${messageBody}.`)
+
   const twiml = new MessagingResponse();
+  twiml.message(`Hello ${From}, you said: ${messageBody}`);
 
-  // Add a text message.
-  const msg = twiml.message(`Hello ${name}, you sent ${messageBody}`);
-  console.log(msg);
-
-  res.writeHead(200, {'Content-Type': 'text/xml'});
-  res.end(twiml.toString());
+  res.type('text/xml').send(twiml.toString());
 });
 
 app.listen(PORT, () => {
